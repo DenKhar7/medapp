@@ -1,0 +1,106 @@
+pipeline {
+    agent any
+
+    environment {
+        // Configuration du déploiement
+        VPS_HOST = '<VPS_HOST>'
+        VPS_USER = 'jenkins-deploy'
+        PROJECT_PATH = '/home/jenkins-deploy/Serveur'
+        GIT_BRANCH = 'main'
+        SERVICE_NAME = 'server'
+    }
+
+    stages {
+        stage('Fetch Latest Code') {
+            steps {
+                script {
+                    echo "Récupération du code depuis Git..."
+                    withCredentials([sshUserPrivateKey(
+                        credentialsId: 'vps-production-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )]) {
+                        sh """
+                            ssh -i "\$SSH_KEY" -o StrictHostKeyChecking=yes \
+                                ${VPS_USER}@${VPS_HOST} \
+                                "cd ${PROJECT_PATH} && git fetch origin ${GIT_BRANCH} && git reset --hard origin/${GIT_BRANCH}"
+                        """
+                    }
+                    echo "Code mis à jour sur le serveur"
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Construction de l'image Docker..."
+                    withCredentials([sshUserPrivateKey(
+                        credentialsId: 'vps-production-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )]) {
+                        sh """
+                            ssh -i "\$SSH_KEY" -o StrictHostKeyChecking=yes \
+                                ${VPS_USER}@${VPS_HOST} \
+                                "cd ${PROJECT_PATH} && docker compose build"
+                        """
+                    }
+                    echo "Image Docker construite"
+                }
+            }
+        }
+
+        stage('Restart Service') {
+            steps {
+                script {
+                    echo "Redémarrage du service..."
+                    withCredentials([sshUserPrivateKey(
+                        credentialsId: 'vps-production-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )]) {
+                        sh """
+                            ssh -i "\$SSH_KEY" -o StrictHostKeyChecking=yes \
+                                ${VPS_USER}@${VPS_HOST} \
+                                "cd ${PROJECT_PATH} && docker compose down ${SERVICE_NAME} && docker compose up -d ${SERVICE_NAME}"
+                        """
+                    }
+                    echo "Service redémarré"
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    echo "Vérification du déploiement..."
+                    withCredentials([sshUserPrivateKey(
+                        credentialsId: 'vps-production-ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )]) {
+                        sh """
+                            ssh -i "\$SSH_KEY" -o StrictHostKeyChecking=yes \
+                                ${VPS_USER}@${VPS_HOST} \
+                                "cd ${PROJECT_PATH} && docker ps"
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "déploiement réussi"
+            echo "Le service est en cours d'exécution"
+        }
+        failure {
+            echo "déploiement échoué"
+        }
+        always {
+            echo "Pipeline terminée à ${new Date()}"
+        }
+    }
+}

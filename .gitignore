@@ -1,0 +1,43 @@
+# Build output / caches
+.gradle/
+build/
+.kotlin/
+out/
+bin/
+!gradle/wrapper/gradle-wrapper.jar
+captures/
+.externalNativeBuild/
+.cxx/
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# Secrets and machine-specific config
+.env
+.env.*
+!.env.example
+local.properties
+*.jks
+*.keystore
+*.pem
+*.p12
+keystore.properties
+google-services.json
+
+# Logs / temp
+*.log
+*.tmp
+*.lock.holder.*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

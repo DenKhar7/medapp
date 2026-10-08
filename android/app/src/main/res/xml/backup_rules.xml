@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Règles pour Android 11 et moins (fullBackupContent) : aucune donnée de l'application n'est sauvegardée.
+    Elle contient des données de santé, et la clé de chiffrement des préférences (Keystore) ne peut de
+    toute façon pas être restaurée sur un autre appareil.
+-->
+<full-backup-content>
+    <exclude domain="root" />
+    <exclude domain="file" />
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+    <exclude domain="external" />
+</full-backup-content>

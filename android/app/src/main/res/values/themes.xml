@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.App_Mobile" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Thème pour l'écran de démarrage (Splash) -->
+    <!-- IMPORTANT : Doit hériter de Theme.MaterialComponents pour être compatible avec AppCompatActivity -->
+    <style name="Theme.App_Mobile.Splash" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">false</item>
+    </style>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fond blanc -->
+    <item android:drawable="@android:color/white" />
+
+    <!-- Logo centré (si disponible) -->
+    <!-- Décommenter et remplacer par votre logo si vous en avez un :
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_launcher_foreground" />
+    </item>
+    -->
+</layer-list>

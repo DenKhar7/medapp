@@ -1,0 +1,41 @@
+ktor:
+  deployment:
+    port: ${API_PORT}
+    host: ${API_HOST}
+    scheme: ${API_SCHEME}
+
+    # Configuration Netty pour éviter les timeouts
+    runningLimit: 10
+    responseWriteTimeoutSeconds: 60
+    requestReadTimeoutSeconds: 60
+
+    # Configuration des thread pools Netty
+    connectionGroupSize: 2
+    workerGroupSize: 5
+    callGroupSize: 10
+  application:
+    modules:
+      - medicapp.server.ApplicationKt.module
+db:
+  jdbcUrl: "jdbc:mariadb://mariadb:3306/med_db_views"
+  driver: "org.mariadb.jdbc.Driver"
+  username: ${MARIADB_USER}
+  password: ${MARIADB_PASSWORD}
+  views:
+    jdbcUrl: "jdbc:mariadb://mariadb:3306/med_db_views"
+    maximumPoolSize: 10
+    # Compte en lecture seule utilisé par l'API (optionnel : sinon le compte principal est utilisé)
+    username: ${?API_DB_USER}
+    password: ${?API_DB_PASSWORD}
+  active:
+    jdbcUrl: "jdbc:mariadb://mariadb:3306/med_db_active"
+    maximumPoolSize: 1
+  archive:
+    jdbcUrl: "jdbc:mariadb://mariadb:3306/med_db_archive"
+    maximumPoolSize: 1
+  temp:
+    jdbcUrl: "jdbc:mariadb://mariadb:3306/med_db_temp"
+    maximumPoolSize: 1
+storage:
+  data-dir: "/var/server/data"
+  temp-dir: "/var/server/temp"

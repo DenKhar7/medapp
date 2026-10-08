@@ -1,0 +1,140 @@
+pipeline {
+    agent any
+
+    environment {
+        // Credentials et configuration
+        VPS_HOST = '<VPS_HOST>'  
+        VPS_USER = 'jenkins-deploy'
+        SSH_KEY_ID = 'vps-production-ssh'  
+
+        // Chemins
+        TEMP_DIR = '/tmp/migrations-run'
+        REPO_URL = 'git@github.com:<your-user>/medapp.git'
+        REPO_BRANCH = 'main'
+        MARIADB_DOCKER_NAME = 'serveur-mariadb-1'
+        MIGRATION_SCRIPTS_PATH = '/sql/migrations/'
+    }
+
+    options {
+        // Timeout de sécurité
+        timeout(time: 10, unit: 'MINUTES')
+
+        // Pas de checkout automatique
+        skipDefaultCheckout()
+    }
+
+    stages {
+        stage('Checkout Infrastructure') {
+            steps {
+                echo 'Récupération du repository Infrastructure...'
+                git branch: "${REPO_BRANCH}",
+                    url: "${REPO_URL}",
+                    credentialsId: 'git-infrastructure-ssh'
+
+                script {
+                    // Vérifier que les dossiers nécessaires existent
+                    def migrationsExist = fileExists('sql/migrations')
+                    def scriptsExist = fileExists('scripts/apply_migrations_docker.sh')
+
+                    if (!migrationsExist) {
+                        error("Le dossier 'sql/migrations/' est introuvable")
+                    }
+                    if (!scriptsExist) {
+                        error("Le script 'scripts/apply_migrations_docker.sh' est introuvable")
+                    }
+
+                    echo "Tous les fichiers nécessaires sont présents"
+                }
+            }
+        }
+
+        stage('List Migrations') {
+            steps {
+                echo 'Migrations détectées :'
+                script {
+                    def migrations = sh(
+                        script: 'ls sql/migrations/V*.sql 2>/dev/null || echo "Aucune"',
+                        returnStdout: true
+                    ).trim()
+
+                    if (migrations == "Aucune") {
+                        echo "Aucun fichier de migration trouvé"
+                        currentBuild.result = 'SUCCESS'
+                        error("Arrêt : aucune migration à appliquer")
+                    }
+
+                    echo migrations
+                }
+            }
+        }
+
+        stage('Deploy to VPS') {
+            steps {
+                echo 'Copie des fichiers vers le VPS...'
+                sshagent(credentials: ["${SSH_KEY_ID}"]) {
+                    sh """
+                        # Nettoyer le dossier temporaire si existant
+                        ssh -o StrictHostKeyChecking=yes ${VPS_USER}@${VPS_HOST} \
+                            'rm -rf ${TEMP_DIR}'
+
+                        # Créer le dossier temporaire
+                        ssh ${VPS_USER}@${VPS_HOST} \
+                            'mkdir -p ${TEMP_DIR}'
+
+                        # Copier migrations/ et scripts/
+                        scp -r sql/migrations/ ${VPS_USER}@${VPS_HOST}:${TEMP_DIR}/
+                        scp -r scripts/ ${VPS_USER}@${VPS_HOST}:${TEMP_DIR}/
+
+                        # Rendre le script exécutable
+                        ssh ${VPS_USER}@${VPS_HOST} \
+                            'chmod +x ${TEMP_DIR}/scripts/apply_migrations_docker.sh' && chmod +x ${TEMP_DIR}/scripts/deploy_and_execute_migrations.sh
+                    """
+                }
+                echo 'Fichiers copiés avec succès'
+            }
+        }
+
+        stage('Apply Migrations') {
+            steps {
+                echo 'Application des migrations sur les bases de données...'
+                sshagent(credentials: ["${SSH_KEY_ID}"]) {
+                    sh """
+                        ./scripts/deploy_and_execute_migrations.sh \
+                            ${VPS_USER} \
+                            ${VPS_HOST} \
+                            ${TEMP_DIR} \
+                            ${MARIADB_DOCKER_NAME}
+                    """
+                }
+                echo 'Migrations appliquées avec succès'
+            }
+        }
+
+
+        stage('Cleanup') {
+            steps {
+                echo 'Nettoyage du dossier temporaire...'
+                sshagent(credentials: ["${SSH_KEY_ID}"]) {
+                    sh """
+                        ssh ${VPS_USER}@${VPS_HOST} \
+                            'rm -rf ${TEMP_DIR}'
+                    """
+                }
+                echo 'Nettoyage terminé'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'SUCCÈS : Migrations appliquées'
+        }
+        failure {
+            echo 'ÉCHEC : Problème lors des migrations'
+        }
+        always {
+            echo 'Nettoyage du workspace Jenkins...'
+            cleanWs()
+        }
+    }
+}

@@ -1,0 +1,9 @@
+URI,CIS,evenement,dateEffet,dateNotification,typeEvenement,description
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_60035924,60035924,http://data.esante.gouv.fr/ansm/medicament/Autorisation_60035924-20100722-AMM,2010-07-22,,Autorisation,
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_60035924,60035924,http://data.esante.gouv.fr/ansm/medicament/Autorisation_60035924-20100722-AMM,2010-07-22,,Autorisation,
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_66507634,66507634,http://data.esante.gouv.fr/ansm/medicament/Autorisation_66507634-20030530-AMM,2003-05-30,,Autorisation,
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_67217445,67217445,http://data.esante.gouv.fr/ansm/medicament/Autorisation_67217445-20011010-AMM,2001-10-10,,Autorisation,
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_60033389,60033389,http://data.esante.gouv.fr/ansm/medicament/Autorisation_60033389-20171207-AMM,2017-12-07,,Autorisation,
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_60208447,60208447,http://data.esante.gouv.fr/ansm/medicament/Autorisation_60208447-20041018-AMM,2004-10-18,,Autorisation,
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_60262879,60262879,http://data.esante.gouv.fr/ansm/medicament/Autorisation_60262879-20130731-AMM,2013-07-31,,Autorisation,
+http://data.esante.gouv.fr/ansm/medicament/SpecialitePharmaceutique_60262879,60262879,http://data.esante.gouv.fr/ansm/medicament/ChangementDeStatut_60262879-20180517-996,2018-05-17,,Archivage de l'autorisation,

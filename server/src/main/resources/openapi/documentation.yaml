@@ -1,0 +1,729 @@
+openapi: 3.0.3
+info:
+  title: Medicapp API
+  description: |
+    API backend Medicapp – gestion des spécialités, présentations,
+    substances et statuts réglementaires (référentiel ANSM / RUIM).
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:4000
+    description: Environnement développement
+
+tags:
+  - name: Spécialités
+  - name: Présentations
+  - name: Substances
+  - name: Statuts
+
+paths:
+
+  /api/v1/medicament/specialites/{cis}:
+    get:
+      tags: [Spécialités]
+      summary: Récupérer le résumé d’une spécialité par CIS
+      parameters:
+        - name: cis
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 68268147
+      responses:
+        "200":
+          description: Résumé de la spécialité
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpecialiteResume"
+              example:
+                cis: 68268147
+                nom: "THIOCOLCHICOSIDE VIATRIS 4 mg, comprimé"
+                nomOrganisation: "VIATRIS SANTE"
+                codeAtc: "M03BX05"
+                libelleAtc: "Thiocolchicoside"
+                voies:
+                  - "orale"
+
+        "204":
+          description: Aucun médicament trouvé
+        "400":
+          description: CIS invalide
+
+
+  /api/v1/medicament/specialites:
+    get:
+      tags: [Spécialités]
+      summary: Recherche de spécialités par libellé
+      parameters:
+        - name: libelle
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "DOLI"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          example: 2
+      responses:
+        "200":
+          description: Liste de spécialités
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpecialiteResume"
+                example:
+                  - cis: 60028495
+                    nom: "DOLIRHUMEPRO PARACETAMOL, PSEUDOEPHEDRINE ET DOXYLAMINE, comprimé"
+                    nomOrganisation: "OPELLA HEALTHCARE FRANCE SAS"
+                    codeAtc: "R01BA52"
+                    libelleAtc: "Pseudoéphédrine en association"
+                    voies:
+                      - "orale"
+
+                  - cis: 60234100
+                    nom: "DOLIPRANE 1000 mg, comprimé"
+                    nomOrganisation: "OPELLA HEALTHCARE FRANCE SAS"
+                    codeAtc: "N02BE01"
+                    libelleAtc: "Paracétamol"
+                    voies:
+                      - "orale"
+        "400":
+          description: Paramètre manquant
+
+  /api/v1/medicament/specialites/status/marketed/{cis}:
+    get:
+      tags: [Spécialités]
+      summary: Détermine si une spécialité pharmaceutique est encore commercialisé ou non, true si oui false si non
+      parameters:
+        - name: cis
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 60002283
+      responses:
+        "200":
+          description: Booléen décrivant si la spécialité pharmaceutique est commercialisée ou non
+          content:
+            application/json:
+              schema:
+                type: boolean
+              example:
+                true
+
+  /api/v1/medicament/specialites/completion:
+    get:
+      tags: [Spécialités]
+      summary: Autocomplétion des libellés de spécialités
+      parameters:
+        - name: libelle
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "DOLI"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          example: 5
+      responses:
+        "200":
+          description: Liste de libellés
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LibelleCompletion"
+                example:
+                  - cis: 60028495
+                    libelle: DOLIRHUMEPRO PARACETAMOL, PSEUDOEPHEDRINE ET DOXYLAMINE, comprimé
+                  - cis: 60234100
+                    libelle: DOLIPRANE 1000 mg, comprimé
+                  - cis: 60310861
+                    libelle: DOLIPRANE 150 mg, suppositoire
+                  - cis: 60641854
+                    libelle: DOLIPRANETABS 1000 mg, comprimé pelliculé
+                  - cis: 60904643
+                    libelle: CODOLIPRANE 500 mg/30 mg, comprimé
+        "204":
+          description: Aucun résultat
+        "400":
+          description: Un paramètre requis est manquant
+
+  /api/v1/medicament/presentations/cip/{cip13}:
+    get:
+      tags: [Présentations]
+      summary: Détail d’une présentation par CIP13
+      parameters:
+        - name: cip13
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '3400921626179'
+      responses:
+        "200":
+          description: Détail de la présentation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresentationDetail"
+              example:
+                cip13: '3400921626179'
+                label: LEVETIRACETAM TEVA 1000 mg, comprimé pelliculé - plaquette(s) thermoformée(s)
+                  PVC PVDC aluminium de 60 comprimé(s)
+                nomSpecialite: LEVETIRACETAM TEVA 1000 mg, comprimé pelliculé
+                cis: 62303171
+                nomOrganisation: TEVA BV
+                codeAtc: N03AX14
+                libelleAtc: Lévétiracétam
+                voie:
+                  - orale
+                dosesParBoite: 60
+                quantiteConditionnement:
+                uniteConditionnement: ''
+                typeDispositif: ''
+        "204":
+          description: Aucun résultat
+        "400":
+          description: Un paramètre requis est manquant
+  
+  /api/v1/medicament/presentations/cis/{cis}:
+    get:
+      tags: [ Présentations ]
+      summary: Récupère toutes les présentation pharmaceutique détaillé lié à une spécialité renseigné par son identifiant CIS
+      parameters:
+        - name: cis
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 68268147
+      responses:
+        "200":
+          description: Liste de détail de présentation pharmaceutique
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: "#/components/schemas/PresentationDetail"
+              example:
+                - cip13: '3400935606105'
+                  label: THIOCOLCHICOSIDE VIATRIS 4 mg, comprimé - plaquette(s) thermoformée(s) PVC-aluminium
+                    PVDC de 12 comprimé(s)
+                  nomSpecialite: THIOCOLCHICOSIDE VIATRIS 4 mg, comprimé
+                  cis: 68268147
+                  nomOrganisation: VIATRIS SANTE
+                  codeAtc: M03BX05
+                  libelleAtc: Thiocolchicoside
+                  voie:
+                    - orale
+                  dosesParBoite: 12
+                  quantiteConditionnement:
+                  uniteConditionnement: ''
+                  typeDispositif: ''
+                - cip13: '3400935882646'
+                  label: THIOCOLCHICOSIDE VIATRIS 4 mg, comprimé - plaquette(s) thermoformée(s) PVC-Aluminium
+                    PVDC de 24  comprimé(s)
+                  nomSpecialite: THIOCOLCHICOSIDE VIATRIS 4 mg, comprimé
+                  cis: 68268147
+                  nomOrganisation: VIATRIS SANTE
+                  codeAtc: M03BX05
+                  libelleAtc: Thiocolchicoside
+                  voie:
+                    - orale
+                  dosesParBoite: 24
+                  quantiteConditionnement:
+                  uniteConditionnement: ''
+                  typeDispositif: ''
+
+        "204":
+          description: Aucun résultat
+        "400":
+          description: Un paramètre requis est manquant
+
+  /api/v1/medicament/presentations:
+    get:
+      tags: [Présentations]
+      summary: Recherche de présentations par libellé
+      parameters:
+        - name: libelle
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "DOLIPRANE"
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+          example: 3
+      responses:
+        "200":
+          description: Liste de présentations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PresentationDetail"
+                example:
+                  - cip13: '3400935955838'
+                    label: DOLIPRANE 1000 mg, comprimé - plaquette(s) thermoformée(s) PVC-aluminium
+                      de 8  comprimé(s)
+                    nomSpecialite: DOLIPRANE 1000 mg, comprimé
+                    cis: 60234100
+                    nomOrganisation: OPELLA HEALTHCARE FRANCE SAS
+                    codeAtc: N02BE01
+                    libelleAtc: Paracétamol
+                    voie:
+                      - orale
+                    dosesParBoite: 8
+                    quantiteConditionnement:
+                    uniteConditionnement: ''
+                    typeDispositif: ''
+                  - cip13: '3400956369553'
+                    label: DOLIPRANE 1000 mg, comprimé - plaquette(s) thermoformée(s) PVC-aluminium
+                      de 100  comprimé(s)
+                    nomSpecialite: DOLIPRANE 1000 mg, comprimé
+                    cis: 60234100
+                    nomOrganisation: OPELLA HEALTHCARE FRANCE SAS
+                    codeAtc: N02BE01
+                    libelleAtc: Paracétamol
+                    voie:
+                      - orale
+                    dosesParBoite: 100
+                    quantiteConditionnement:
+                    uniteConditionnement: ''
+                    typeDispositif: ''
+                  - cip13: '3400934809408'
+                    label: DOLIPRANE 150 mg, suppositoire - plaquette(s) thermoformée(s) PVC polyéthylène
+                      de 10 suppositoire(s)
+                    nomSpecialite: DOLIPRANE 150 mg, suppositoire
+                    cis: 60310861
+                    nomOrganisation: OPELLA HEALTHCARE FRANCE SAS
+                    codeAtc: N02BE01
+                    libelleAtc: Paracétamol
+                    voie:
+                      - rectale
+                    dosesParBoite: 10
+                    quantiteConditionnement:
+                    uniteConditionnement: ''
+                    typeDispositif: ''
+
+        "204":
+          description: Aucun médicament trouvé
+        "400":
+          description: Un paramètre requis est manquant
+
+
+  /api/v1/medicament/presentations/status/marketed/{cip13}:
+    get:
+      tags: [Présentations]
+      summary: Détermine si une présentation pharmaceutique est encore commercialisé ou non, true si oui false si non
+      parameters:
+        - name: cip13
+          in: path
+          required: true
+          schema:
+            type: string
+          example: '3400921674835'
+      responses:
+        "200":
+          description: Booléen décrivant si la présentation pharmaceutique est commercialisée ou non
+          content:
+            application/json:
+              schema:
+                type: boolean
+              example:
+                true
+        "400":
+          description: Un paramètre requis est manquant
+
+  /api/v1/medicament/substances/resume/cis/{cis}:
+    get:
+      tags: [Substances]
+      summary: Résumé des substances d’une spécialité
+      parameters:
+        - name: cis
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 61274635
+      responses:
+        "200":
+          description: Liste des substances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubstanceResume"
+                example:
+                  - codeSubstance: '00430'
+                    libelle: chlorure de calcium dihydraté
+                    relationSubstance: substance active
+                    expressionQuantite:
+                    substanceActive:
+                    fractionTherapeutique:
+                  - codeSubstance: '00529'
+                    libelle: glucose
+                    relationSubstance: fraction thérapeutique
+                    expressionQuantite:
+                    substanceActive:
+                    fractionTherapeutique:
+                  - codeSubstance: '03018'
+                    libelle: chlorure de magnésium hexahydraté
+                    relationSubstance: substance active
+                    expressionQuantite:
+                    substanceActive:
+                    fractionTherapeutique:
+                  - codeSubstance: '17150'
+                    libelle: glucose monohydraté
+                    relationSubstance: substance active
+                    expressionQuantite:
+                    substanceActive:
+                    fractionTherapeutique:
+                  - codeSubstance: '00899'
+                    libelle: bicarbonate de sodium
+                    relationSubstance: substance active
+                    expressionQuantite:
+                    substanceActive:
+                    fractionTherapeutique:
+                  - codeSubstance: '00901'
+                    libelle: chlorure de sodium
+                    relationSubstance: substance active
+                    expressionQuantite:
+                    substanceActive:
+                    fractionTherapeutique:
+                  - codeSubstance: '45730'
+                    libelle: S-lactate de sodium
+                    relationSubstance: substance active
+                    expressionQuantite:
+                    substanceActive:
+                    fractionTherapeutique:
+        "204":
+          description: Aucun résultat
+        "400":
+          description: Un paramètre requis est manquant
+
+  /api/v1/medicament/substances/detail/cis/{cis}:
+    get:
+      tags: [Substances]
+      summary: Détail des substances d’une spécialité
+      parameters:
+        - name: cis
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 62550435
+      responses:
+        "200":
+          description: Liste détaillée des substances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubstanceDetail"
+                example:
+                  - nomSubstance: DACARBAZINE
+                    typeSubstance: Chemical
+                    formuleMoleculaire: C6H10N6O
+                    poidMoleculaire: 182.18
+        "204":
+          description: Aucun résultat
+        "400":
+          description: Un paramètre requis est manquant
+
+  /api/v1/medicament/presentations/status/latest/{cip13}:
+    get:
+      tags:
+        - Présentations
+      summary: Dernier changement de statut réglementaire d’une présentation
+      parameters:
+        - name: cip13
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "3400921756661"
+      responses:
+        "200":
+          description: Dernier événement de statut
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PresStatus"
+              example:
+                cip13: '3400921756661'
+                dateEffet: '2025-01-29'
+                typeEvenement: Déclaration de commercialisation
+        "204":
+          description: Aucun statut trouvé
+        "400":
+          description: Paramètre CIP13 invalide
+
+  /api/v1/medicament/presentations/status/all/{cip13}:
+    get:
+      tags:
+        - Présentations
+      summary: Historique complet des changements de statuts d’une présentation
+      parameters:
+        - name: cip13
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "3400921756661"
+      responses:
+        "200":
+          description: Liste des événements de statut
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PresStatus"
+                example:
+                  - cip13: '3400921756661'
+                    dateEffet: '2011-12-22'
+                    typeEvenement: Déclaration de commercialisation
+                  - cip13: '3400921756661'
+                    dateEffet: '2014-12-18'
+                    typeEvenement: Arrêt de Commercialisation (Autorisation devenue inactive)
+                  - cip13: '3400921756661'
+                    dateEffet: '2015-07-28'
+                    typeEvenement: Déclaration de commercialisation
+                  - cip13: '3400921756661'
+                    dateEffet: '2016-01-05'
+                    typeEvenement: Déclaration d'arrêt de commercialisation
+                  - cip13: '3400921756661'
+                    dateEffet: '2019-12-30'
+                    typeEvenement: Déclaration de commercialisation
+                  - cip13: '3400921756661'
+                    dateEffet: '2022-11-30'
+                    typeEvenement: Déclaration d'arrêt de commercialisation
+                  - cip13: '3400921756661'
+                    dateEffet: '2025-01-29'
+                    typeEvenement: Déclaration de commercialisation
+        "204":
+          description: Aucun statut trouvé
+        "400":
+          description: Paramètre CIP13 invalide
+
+  /api/v1/medicament/specialites/status/latest/{cis}:
+    get:
+      tags:
+        - Spécialités
+      summary: Dernier changement de statut réglementaire d’une spécialité
+      parameters:
+        - name: cis
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 62338553
+      responses:
+        "200":
+          description: Dernier événement de statut
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpeStatus"
+              example:
+                cis: 62338553
+                dateEffet: '2016-12-27'
+                typeEvenement: Autorisation redevenue active
+        "204":
+          description: Aucun statut trouvé
+        "400":
+          description: CIS invalide
+
+  /api/v1/medicament/specialites/status/all/{cis}:
+    get:
+      tags:
+        - Spécialités
+      summary: Historique complet des changements de statuts d’une spécialité
+      parameters:
+        - name: cis
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 62338553
+      responses:
+        "200":
+          description: Liste des événements de statut
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpeStatus"
+                example:
+                  - cis: 62338553
+                    dateEffet: '2014-02-28'
+                    typeEvenement: Autorisation
+                  - cis: 62338553
+                    dateEffet: '2014-12-18'
+                    typeEvenement: Suspension d'autorisation
+                  - cis: 62338553
+                    dateEffet: '2015-08-21'
+                    typeEvenement: Autorisation redevenue active
+                  - cis: 62338553
+                    dateEffet: '2016-07-19'
+                    typeEvenement: Suspension d'autorisation
+                  - cis: 62338553
+                    dateEffet: '2016-09-22'
+                    typeEvenement: Suspension d'autorisation
+                  - cis: 62338553
+                    dateEffet: '2016-12-27'
+                    typeEvenement: Autorisation redevenue active
+
+        "204":
+          description: Aucun statut trouvé
+        "400":
+          description: CIS invalide
+
+components:
+  schemas:
+
+    SpecialiteResume:
+      type: object
+      properties:
+        cis:
+          type: integer
+        nom:
+          type: string
+        nomOrganisation:
+          type: string
+          nullable: true
+        codeAtc:
+          type: string
+          nullable: true
+        libelleAtc:
+          type: string
+          nullable: true
+        voies:
+          type: string
+
+    PresentationDetail:
+      type: object
+      properties:
+        cip13:
+          type: string
+        label:
+          type: string
+        nomSpecialite:
+          type: string
+        cis:
+          type: integer
+        nomOrganisation:
+          type: string
+          nullable: true
+        codeAtc:
+          type: string
+          nullable: true
+        libelleAtc:
+          type: string
+          nullable: true
+        voie:
+          type: array
+          format: string
+        dosesParBoite:
+          type: integer
+          nullable: true
+        quantiteConditionnement:
+          type: number
+          nullable: true
+        uniteConditionnement:
+          type: string
+          nullable: true
+        typeDispositif:
+          type: string
+          nullable: true
+
+
+    SubstanceResume:
+      type: object
+      properties:
+        codeSubstance:
+          type: string
+        libelle:
+          type: string
+        relationSubstance:
+          type: string
+        expressionQuantite:
+          type: string
+          nullable: true
+        substanceActive:
+          type: integer
+          nullable: true
+        fractionTherapeutique:
+          type: integer
+          nullable: true
+
+    SubstanceDetail:
+      type: object
+      properties:
+        nomSubstance:
+          type: string
+        typeSubstance:
+          type: string
+          nullable: true
+        formuleMoleculaire:
+          type: string
+          nullable: true
+        poidMoleculaire:
+          type: number
+          nullable: true
+
+    SpeStatus:
+      type: object
+      properties:
+        cis:
+          type: integer
+        dateEffet:
+          type: string
+          format: date
+          nullable: true
+        typeEvenement:
+          type: string
+          nullable: true
+
+    PresStatus:
+      type: object
+      properties:
+        cip13:
+          type: integer
+        dateEffet:
+          type: string
+          format: date
+          nullable: true
+        typeEvenement:
+          type: string
+          nullable: true
+
+    LibelleCompletion:
+      type: object
+      properties:
+        cis:
+          type: integer
+        libelle:
+          type: string

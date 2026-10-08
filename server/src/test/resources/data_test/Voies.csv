@@ -1,0 +1,8 @@
+URI,identifiant,libelle,codeRMS,codeEDQM
+http://data.esante.gouv.fr/ansm/medicament/Voie_20,20,orale,100000073619,20053000
+http://data.esante.gouv.fr/ansm/medicament/Voie_16,16,intraveineuse,100000073611,20045000
+http://data.esante.gouv.fr/ansm/medicament/Voie_17,17,sous-cutanée,100000073633,20066000
+http://data.esante.gouv.fr/ansm/medicament/Voie_13,13,intramusculaire,100000073600,20035000
+http://data.esante.gouv.fr/ansm/medicament/Voie_10,10,intra-artérielle,100000073587,20023000
+http://data.esante.gouv.fr/ansm/medicament/Voie_14,14,intrapleurale,100000073605,20039000
+http://data.esante.gouv.fr/ansm/medicament/Voie_783,783,intratumorale,100000073609,20043000

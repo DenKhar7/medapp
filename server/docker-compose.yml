@@ -1,0 +1,55 @@
+services:
+  mariadb:
+    image: mariadb:11
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      # Schéma unique du dépôt (infra/) : création des 4 bases + comptes applicatifs au premier démarrage
+      - ../infra/sql/prod:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u root -p$$MARIADB_ROOT_PASSWORD"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - backend
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    networks:
+      - backend
+    # Variables explicites (et non env_file) : le serveur ne reçoit JAMAIS MARIADB_ROOT_PASSWORD.
+    environment:
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      API_DB_USER: ${API_DB_USER}
+      API_DB_PASSWORD: ${API_DB_PASSWORD}
+      API_HOST: ${API_HOST}
+      API_PORT: ${API_PORT}
+      API_SCHEME: ${API_SCHEME}
+    healthcheck:
+      # CMD-SHELL : l'exécution directe (CMD) n'expanse pas les variables d'environnement.
+      # /health vérifie aussi que la base répond (503 sinon).
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:$$API_PORT/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  mariadb_data:
+
+networks:
+  backend:
+    driver: bridge
+    name: backend

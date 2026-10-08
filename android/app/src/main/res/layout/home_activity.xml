@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <View
+            android:id="@+id/headerBackground"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:background="#8B8BFB"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <include
+            android:id="@+id/headerSelector"
+            layout="@layout/layout_profile_selector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cvSearch" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvSearch"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/headerBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/headerBackground"
+            app:layout_constraintVertical_bias="0.85">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="#757575" />
+
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/rechercher"
+                    android:inputType="text"
+                    android:paddingStart="12dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView android:id="@+id/navHome" android:layout_width="0dp" android:layout_height="32dp" android:layout_weight="1" android:src="@drawable/ic_home" app:tint="#000000" />
+
+        <ImageView
+            android:id="@+id/nav_user_treatments"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_pill"
+            app:tint="#000000" />
+
+        <ImageView
+            android:id="@+id/navMedicaments"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_search"
+            app:tint="#000000" />
+        <ImageView android:id="@+id/navOrdonnances" android:layout_width="0dp" android:layout_height="32dp" android:layout_weight="1" android:src="@drawable/ic_prescription" app:tint="#000000" />
+        <ImageView android:id="@+id/navPathologie" android:layout_width="0dp" android:layout_height="32dp" android:layout_weight="1" android:src="@drawable/ic_pathology" app:tint="#000000" />
+
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/headerContainer"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="16dp"
+            android:clipToPadding="false">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvMedicamentsDuJour"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvMedicamentsDuJourTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/medicaments_du_jour"
+                            android:textColor="#000000"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/ivNotification"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_bell"
+                            app:tint="#8B8BFB" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E0E0E0" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvMedicamentsDuJour"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/item_medicament_jour" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:paddingTop="16dp"
+                    android:background="@drawable/bg_calendar_container">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="20dp">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            app:cardCornerRadius="24dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="#FFFFFF"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?android:attr/selectableItemBackground">
+
+                            <ImageView
+                                android:id="@+id/btnPrevMonth"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_back"
+                                app:tint="#8B8BFB"
+                                android:contentDescription="@string/previous_month" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:id="@+id/tvMonthYear"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:text="@string/month_year_example"
+                            android:textColor="#1A1A1A"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.02" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            app:cardCornerRadius="24dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="#FFFFFF"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?android:attr/selectableItemBackground">
+
+                            <ImageView
+                                android:id="@+id/btnNextMonth"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_back"
+                                android:rotation="180"
+                                app:tint="#8B8BFB"
+                                android:contentDescription="@string/next_month" />
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginBottom="16dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/L"
+                            android:textColor="#8B8BFB"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/M"
+                            android:textColor="#8B8BFB"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/M"
+                            android:textColor="#8B8BFB"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/J"
+                            android:textColor="#8B8BFB"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/V"
+                            android:textColor="#8B8BFB"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/S"
+                            android:textColor="#FF6B6B"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/D"
+                            android:textColor="#FF6B6B"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvCalendrier"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="280dp"
+                        android:padding="6dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:nestedScrollingEnabled="false"
+                        android:clipToPadding="false"
+                        tools:itemCount="42" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvMedicaments"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_pill" app:tint="#8B8BFB" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:text="@string/mes_traitements" android:textColor="#000000" android:textSize="18sp" android:textStyle="bold" />
+                    <ImageView android:id="@+id/btnTreatment" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_right_arrow" app:tint="#8B8BFB" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvOrdonnances"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_prescription" app:tint="#8B8BFB"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:text="@string/ordonnances" android:textColor="#000000" android:textSize="18sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvPathologie"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_pathology" app:tint="#8B8BFB"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:text="@string/pathologie" android:textColor="#000000" android:textSize="18sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvDarkMode"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_vertical" android:paddingStart="20dp" android:paddingEnd="20dp">
+                    <ImageView android:layout_width="32dp" android:layout_height="27dp" android:src="@drawable/ic_moon" app:tint="#8B8BFB"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_weight="1" android:text="@string/sommeil" android:textColor="#000000" android:textSize="18sp" android:textStyle="bold"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnEmergency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/urgence_title"
+        android:src="@drawable/ic_emergency_call"
+        app:tint="@android:color/white"
+        app:backgroundTint="#E53935"
+        app:rippleColor="#FFFFFF"
+        app:borderWidth="0dp"
+        app:elevation="12dp"
+        app:pressedTranslationZ="16dp"
+        app:fabSize="normal"
+        app:maxImageSize="32dp"
+        app:shapeAppearanceOverlay="@style/EmergencyFabShape"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
